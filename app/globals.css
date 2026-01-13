@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-surface text-slate-900;
+}
+
+.section-title {
+  @apply text-xl font-semibold text-slate-900;
+}
+
+.section-subtitle {
+  @apply text-sm text-slate-500;
+}
+
+.card {
+  @apply rounded-2xl bg-white shadow-card;
+}
+
+@layer components {
+  .btn-primary {
+    @apply rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700;
+  }
+
+  .btn-secondary {
+    @apply rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 transition hover:border-slate-300;
+  }
+
+  .pill {
+    @apply rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600;
+  }
+}
