@@ -1,3 +1,8 @@
+import BenefitCard from "@/components/BenefitCard";
+import CalendarGrid from "@/components/CalendarGrid";
+import SectionHeader from "@/components/SectionHeader";
+import StatCard from "@/components/StatCard";
+
 const stats = [
   {
     label: "매칭된 혜택",
@@ -22,21 +27,24 @@ const recommendedBenefits = [
     agency: "서울특별시",
     amount: "월 20만원",
     deadline: "D-5",
-    tag: "마감 임박"
+    tag: "마감 임박",
+    highlight: "urgent"
   },
   {
     title: "청년 취업성공 패키지",
     agency: "고용노동부",
     amount: "최대 300만원",
     deadline: "D-18",
-    tag: "신규"
+    tag: "신규",
+    highlight: "upcoming"
   },
   {
     title: "디지털 역량 교육",
     agency: "서울산업진흥원",
     amount: "전액 지원",
     deadline: "D-30",
-    tag: "추천"
+    tag: "추천",
+    highlight: "upcoming"
   }
 ];
 
@@ -85,11 +93,13 @@ const myBenefits = [
   }
 ];
 
+const filterChips = ["청년", "소상공인", "주거", "교육", "서울", "신청 중"];
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-surface pb-16">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
               BenefitCal MVP
@@ -129,71 +139,36 @@ export default function Home() {
                     시간이 짧은 혜택부터 확인하세요.
                   </p>
                 </div>
-                <div className="flex flex-col gap-3 text-sm font-semibold">
-                  <button className="rounded-full bg-primary px-5 py-3 text-white">
-                    혜택 탐색하기
-                  </button>
-                  <button className="rounded-full border border-slate-200 px-5 py-3 text-slate-600">
-                    캘린더 보기
-                  </button>
+                <div className="flex flex-col gap-3">
+                  <button className="btn-primary">혜택 탐색하기</button>
+                  <button className="btn-secondary">캘린더 보기</button>
                 </div>
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               {stats.map((stat) => (
-                <div key={stat.label} className="card p-5">
-                  <p className="text-xs font-semibold uppercase text-slate-400">
-                    {stat.label}
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold text-midnight">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">{stat.detail}</p>
-                </div>
+                <StatCard key={stat.label} {...stat} />
               ))}
             </div>
 
             <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="section-title">내게 맞는 혜택</h3>
-                  <p className="section-subtitle">
-                    매칭 점수가 높은 혜택을 우선적으로 보여드립니다.
-                  </p>
-                </div>
-                <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
-                  전체 보기
-                </button>
-              </div>
+              <SectionHeader
+                title="내게 맞는 혜택"
+                description="매칭 점수가 높은 혜택을 우선적으로 보여드립니다."
+                action={
+                  <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
+                    전체 보기
+                  </button>
+                }
+              />
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 {recommendedBenefits.map((benefit) => (
-                  <article key={benefit.title} className="rounded-2xl border border-slate-100 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                        {benefit.tag}
-                      </span>
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          benefit.deadline === "D-5"
-                            ? "bg-red-100 text-danger"
-                            : "bg-amber-100 text-warning"
-                        }`}
-                      >
-                        {benefit.deadline}
-                      </span>
-                    </div>
-                    <h4 className="mt-4 text-lg font-semibold text-midnight">
-                      {benefit.title}
-                    </h4>
-                    <p className="mt-1 text-xs text-slate-500">{benefit.agency}</p>
-                    <p className="mt-3 text-sm font-semibold text-slate-700">
-                      {benefit.amount}
-                    </p>
-                    <button className="mt-4 w-full rounded-full bg-midnight px-4 py-2 text-xs font-semibold text-white">
-                      상세 보기
-                    </button>
-                  </article>
+                  <BenefitCard
+                    key={benefit.title}
+                    {...benefit}
+                    actionLabel="상세 보기"
+                  />
                 ))}
               </div>
             </div>
@@ -201,8 +176,7 @@ export default function Home() {
 
           <aside className="space-y-6">
             <div className="card p-6">
-              <h3 className="section-title">프로필 요약</h3>
-              <p className="section-subtitle">나이 · 지역 · 직업 상태</p>
+              <SectionHeader title="프로필 요약" description="나이 · 지역 · 직업 상태" />
               <div className="mt-4 space-y-3 text-sm text-slate-600">
                 <div className="flex justify-between">
                   <span>나이</span>
@@ -217,21 +191,16 @@ export default function Home() {
                   <span className="font-semibold text-slate-800">취업 준비중</span>
                 </div>
               </div>
-              <button className="mt-5 w-full rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
-                프로필 수정
-              </button>
+              <button className="btn-secondary mt-5 w-full">프로필 수정</button>
             </div>
 
             <div className="card p-6">
-              <h3 className="section-title">마감 임박 혜택</h3>
-              <p className="section-subtitle">D-7 이내 혜택을 우선 표시</p>
+              <SectionHeader title="마감 임박 혜택" description="D-7 이내 혜택을 우선 표시" />
               <div className="mt-4 space-y-3">
                 {recommendedBenefits.slice(0, 2).map((benefit) => (
                   <div key={benefit.title} className="rounded-xl border border-slate-100 p-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold text-midnight">
-                        {benefit.title}
-                      </p>
+                      <p className="text-sm font-semibold text-midnight">{benefit.title}</p>
                       <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-danger">
                         {benefit.deadline}
                       </span>
@@ -246,29 +215,41 @@ export default function Home() {
       </section>
 
       <section className="mx-auto mt-12 w-full max-w-6xl px-6">
-        <div className="grid gap-6 lg:grid-cols-[1.3fr,1fr]">
+        <div className="grid gap-6 lg:grid-cols-[1.4fr,1fr]">
           <div className="card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="section-title">혜택 탐색</h3>
-                <p className="section-subtitle">카테고리, 지역, 상태로 필터링</p>
+            <SectionHeader
+              title="혜택 탐색"
+              description="카테고리, 지역, 상태로 필터링"
+              action={<button className="btn-primary px-4 py-2 text-xs">필터 열기</button>}
+            />
+            <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  className="h-10 flex-1 rounded-full border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none focus:border-slate-300"
+                  placeholder="혜택명, 기관명으로 검색"
+                />
+                <button className="rounded-full bg-midnight px-4 py-2 text-xs font-semibold text-white">
+                  검색
+                </button>
               </div>
-              <button className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white">
-                필터 열기
-              </button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {filterChips.map((chip) => (
+                  <button key={chip} className="pill border border-transparent hover:border-slate-200">
+                    {chip}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {exploreBenefits.map((benefit) => (
                 <article key={benefit.title} className="rounded-2xl border border-slate-100 p-4">
-                  <h4 className="text-base font-semibold text-midnight">
-                    {benefit.title}
-                  </h4>
+                  <h4 className="text-base font-semibold text-midnight">{benefit.title}</h4>
                   <p className="mt-1 text-xs text-slate-500">{benefit.agency}</p>
                   <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
                     <span>{benefit.amount}</span>
                     <span className="font-semibold text-slate-700">{benefit.deadline}</span>
                   </div>
-                  <button className="mt-4 w-full rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
+                  <button className="btn-secondary mt-4 w-full px-4 py-2 text-xs">
                     북마크
                   </button>
                 </article>
@@ -277,49 +258,16 @@ export default function Home() {
           </div>
 
           <div className="card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="section-title">캘린더</h3>
-                <p className="section-subtitle">마감일을 한눈에 관리하세요</p>
-              </div>
-              <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
-                2025년 1월
-              </button>
-            </div>
-            <div className="mt-6 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-400">
-              {[
-                "일",
-                "월",
-                "화",
-                "수",
-                "목",
-                "금",
-                "토"
-              ].map((day) => (
-                <span key={day}>{day}</span>
-              ))}
-            </div>
-            <div className="mt-3 grid grid-cols-7 gap-2">
-              {calendarDays.map((item) => (
-                <div
-                  key={item.day}
-                  className={`flex h-10 items-center justify-center rounded-xl text-xs font-semibold ${
-                    item.status === "urgent"
-                      ? "bg-red-100 text-danger"
-                      : item.status === "upcoming"
-                      ? "bg-amber-100 text-warning"
-                      : "bg-slate-100 text-slate-600"
-                  }`}
-                >
-                  <span>{item.day}</span>
-                  {item.count > 0 && (
-                    <span className="ml-1 rounded-full bg-white px-1 text-[10px] text-slate-500">
-                      {item.count}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+            <SectionHeader
+              title="캘린더"
+              description="마감일을 한눈에 관리하세요"
+              action={
+                <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
+                  2025년 1월
+                </button>
+              }
+            />
+            <CalendarGrid days={calendarDays} />
             <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" /> 신청 시작일
@@ -337,38 +285,24 @@ export default function Home() {
 
       <section className="mx-auto mt-12 w-full max-w-6xl px-6">
         <div className="card p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h3 className="section-title">내 혜택</h3>
-              <p className="section-subtitle">
-                북마크부터 신청 완료까지 상태를 관리하세요.
-              </p>
-            </div>
-            <div className="flex gap-2 text-xs font-semibold text-slate-500">
-              <button className="rounded-full bg-slate-900 px-4 py-2 text-white">
-                북마크
-              </button>
-              <button className="rounded-full border border-slate-200 px-4 py-2">
-                준비중
-              </button>
-              <button className="rounded-full border border-slate-200 px-4 py-2">
-                신청완료
-              </button>
-              <button className="rounded-full border border-slate-200 px-4 py-2">
-                수령완료
-              </button>
-            </div>
-          </div>
+          <SectionHeader
+            title="내 혜택"
+            description="북마크부터 신청 완료까지 상태를 관리하세요."
+            action={
+              <div className="flex gap-2 text-xs font-semibold text-slate-500">
+                <button className="rounded-full bg-slate-900 px-4 py-2 text-white">북마크</button>
+                <button className="rounded-full border border-slate-200 px-4 py-2">준비중</button>
+                <button className="rounded-full border border-slate-200 px-4 py-2">신청완료</button>
+                <button className="rounded-full border border-slate-200 px-4 py-2">수령완료</button>
+              </div>
+            }
+          />
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {myBenefits.map((benefit) => (
               <div key={benefit.title} className="rounded-2xl border border-slate-100 p-5">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-base font-semibold text-midnight">
-                    {benefit.title}
-                  </h4>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    {benefit.status}
-                  </span>
+                  <h4 className="text-base font-semibold text-midnight">{benefit.title}</h4>
+                  <span className="pill">{benefit.status}</span>
                 </div>
                 <p className="mt-2 text-xs text-slate-500">마감 {benefit.deadline}</p>
                 <button className="mt-4 w-full rounded-full bg-midnight px-4 py-2 text-xs font-semibold text-white">
@@ -378,9 +312,7 @@ export default function Home() {
             ))}
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 p-5 text-center text-sm text-slate-500">
               아직 북마크한 혜택이 없습니다.
-              <button className="mt-3 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
-                탐색으로 이동
-              </button>
+              <button className="btn-secondary mt-3 px-4 py-2 text-xs">탐색으로 이동</button>
             </div>
           </div>
         </div>
