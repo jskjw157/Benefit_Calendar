@@ -72,6 +72,7 @@ const exploreBenefits = [
 const calendarYear = 2025;
 const calendarMonth = 1;
 const daysInMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+const firstWeekday = new Date(calendarYear, calendarMonth - 1, 1).getDay();
 
 const calendarDays = Array.from({ length: daysInMonth }, (_, index) => {
   const day = index + 1;
@@ -271,7 +272,7 @@ export default function Home() {
                 </button>
               }
             />
-            <CalendarGrid days={calendarDays} />
+            <CalendarGrid days={calendarDays} firstWeekday={firstWeekday} />
             <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" /> 신청 시작일
