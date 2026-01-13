@@ -6,11 +6,14 @@ type CalendarDay = {
 
 type CalendarGridProps = {
   days: CalendarDay[];
+  firstWeekday: number;
 };
 
 const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
 
-export default function CalendarGrid({ days }: CalendarGridProps) {
+export default function CalendarGrid({ days, firstWeekday }: CalendarGridProps) {
+  const offsetDays = Array.from({ length: firstWeekday });
+
   return (
     <div>
       <div className="mt-6 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-400">
@@ -19,6 +22,9 @@ export default function CalendarGrid({ days }: CalendarGridProps) {
         ))}
       </div>
       <div className="mt-3 grid grid-cols-7 gap-2">
+        {offsetDays.map((_, index) => (
+          <div key={`empty-${index}`} className="h-10" aria-hidden="true" />
+        ))}
         {days.map((item) => (
           <div
             key={item.day}
