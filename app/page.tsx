@@ -69,7 +69,11 @@ const exploreBenefits = [
   }
 ];
 
-const calendarDays = Array.from({ length: 30 }, (_, index) => {
+const calendarYear = 2025;
+const calendarMonth = 1;
+const daysInMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+
+const calendarDays = Array.from({ length: daysInMonth }, (_, index) => {
   const day = index + 1;
   return {
     day,
@@ -263,7 +267,7 @@ export default function Home() {
               description="마감일을 한눈에 관리하세요"
               action={
                 <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
-                  2025년 1월
+                  {calendarYear}년 {calendarMonth}월
                 </button>
               }
             />
