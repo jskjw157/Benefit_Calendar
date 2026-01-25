@@ -98,7 +98,35 @@ const myBenefits = [
   }
 ];
 
-const filterChips = ["청년", "소상공인", "주거", "교육", "서울", "신청 중"];
+const filterChips = [
+  { label: "청년", active: true },
+  { label: "소상공인", active: false },
+  { label: "주거", active: true },
+  { label: "교육", active: false },
+  { label: "서울", active: true },
+  { label: "신청 중", active: false }
+];
+
+const benefitTabs = ["북마크", "준비중", "신청완료", "수령완료"];
+const activeBenefitTab = "북마크";
+const exploreCount = 128;
+const weeklyHighlights = [
+  {
+    title: "청년 월세 지원 마감",
+    date: "1월 10일",
+    tag: "D-5"
+  },
+  {
+    title: "자기계발 지원금 오픈",
+    date: "1월 12일",
+    tag: "신규"
+  },
+  {
+    title: "주거 안정 패키지 상담",
+    date: "1월 14일",
+    tag: "예약"
+  }
+];
 
 export default function Home() {
   return (
@@ -215,6 +243,34 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            <div className="card p-6">
+              <SectionHeader
+                title="이번 주 일정"
+                description="다가오는 마감과 신규 오픈을 모아서 보여드려요."
+                action={
+                  <button className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600">
+                    전체 일정
+                  </button>
+                }
+              />
+              <div className="mt-5 space-y-3">
+                {weeklyHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-midnight">{item.title}</p>
+                      <p className="mt-1 text-xs text-slate-500">{item.date}</p>
+                    </div>
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                      {item.tag}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </aside>
         </div>
       </section>
@@ -225,7 +281,22 @@ export default function Home() {
             <SectionHeader
               title="혜택 탐색"
               description="카테고리, 지역, 상태로 필터링"
-              action={<button className="btn-primary px-4 py-2 text-xs">필터 열기</button>}
+              action={
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full bg-slate-100 px-3 py-2 text-slate-600">
+                    총 {exploreCount}건
+                  </span>
+                  <select
+                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"
+                    defaultValue="deadline"
+                  >
+                    <option value="deadline">마감 임박순</option>
+                    <option value="recent">최신 등록순</option>
+                    <option value="popular">관심 많은순</option>
+                  </select>
+                  <button className="btn-primary px-4 py-2 text-xs">필터 열기</button>
+                </div>
+              }
             />
             <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4">
               <div className="flex flex-wrap items-center gap-3">
@@ -239,10 +310,20 @@ export default function Home() {
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {filterChips.map((chip) => (
-                  <button key={chip} className="pill border border-transparent hover:border-slate-200">
-                    {chip}
+                  <button
+                    key={chip.label}
+                    className={`pill border ${
+                      chip.active
+                        ? "border-midnight bg-white text-midnight"
+                        : "border-transparent text-slate-500 hover:border-slate-200"
+                    }`}
+                  >
+                    {chip.label}
                   </button>
                 ))}
+                <button className="pill border border-transparent text-slate-500 hover:border-slate-200">
+                  + 필터 추가
+                </button>
               </div>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -295,10 +376,18 @@ export default function Home() {
             description="북마크부터 신청 완료까지 상태를 관리하세요."
             action={
               <div className="flex gap-2 text-xs font-semibold text-slate-500">
-                <button className="rounded-full bg-slate-900 px-4 py-2 text-white">북마크</button>
-                <button className="rounded-full border border-slate-200 px-4 py-2">준비중</button>
-                <button className="rounded-full border border-slate-200 px-4 py-2">신청완료</button>
-                <button className="rounded-full border border-slate-200 px-4 py-2">수령완료</button>
+                {benefitTabs.map((tab) => (
+                  <button
+                    key={tab}
+                    className={
+                      tab === activeBenefitTab
+                        ? "rounded-full bg-slate-900 px-4 py-2 text-white"
+                        : "rounded-full border border-slate-200 px-4 py-2"
+                    }
+                  >
+                    {tab}
+                  </button>
+                ))}
               </div>
             }
           />
