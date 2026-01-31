@@ -1,0 +1,64 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-01-31T12:00:00.000Z",
+  "activeFeatures": [
+    "mvp-benefit-calendar"
+  ],
+  "primaryFeature": "mvp-benefit-calendar",
+  "features": {
+    "mvp-benefit-calendar": {
+      "phase": "design",
+      "status": "completed",
+      "createdAt": "2026-01-31T10:38:25.917Z",
+      "updatedAt": "2026-01-31T12:00:00.000Z",
+      "documents": {
+        "plan": "docs/01-plan/features/mvp-benefit-calendar.plan.md",
+        "design": "docs/02-design/features/mvp-benefit-calendar.design.md",
+        "analysis": null,
+        "report": null
+      },
+      "matchRate": null,
+      "iterationCount": 0
+    }
+  },
+  "pipeline": {
+    "currentPhase": 3,
+    "level": "Dynamic",
+    "phaseHistory": [
+      {
+        "phase": 1,
+        "completedAt": "2026-01-31T10:38:25.917Z",
+        "note": "Schema defined in plan document"
+      },
+      {
+        "phase": 2,
+        "completedAt": "2026-01-31T11:30:00.000Z",
+        "note": "Coding conventions established"
+      }
+    ]
+  },
+  "session": {
+    "startedAt": "2026-01-31T10:38:25.917Z",
+    "onboardingCompleted": true,
+    "lastActivity": "2026-01-31T12:00:00.000Z"
+  },
+  "history": [
+    {
+      "action": "plan_created",
+      "feature": "mvp-benefit-calendar",
+      "timestamp": "2026-01-31T10:38:25.917Z",
+      "note": "Migrated from MVP_실행계획.md to PDCA structure"
+    },
+    {
+      "action": "phase_2_completed",
+      "timestamp": "2026-01-31T11:30:00.000Z",
+      "note": "Convention documents created"
+    },
+    {
+      "action": "design_created",
+      "feature": "mvp-benefit-calendar",
+      "timestamp": "2026-01-31T12:00:00.000Z",
+      "note": "Design document created with architecture, API, DB, component design"
+    }
+  ]
+}
