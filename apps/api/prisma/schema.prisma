@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmploymentStatus {
+  JOB_SEEKER
+  EMPLOYED
+  STUDENT
+  SELF_EMPLOYED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum UserBenefitStatus {
+  BOOKMARKED
+  PREPARING
+  APPLIED
+  RECEIVED
+}
+
+model User {
+  id                   String              @id @default(uuid())
+  email                String              @unique
+  passwordHash         String              @map("password_hash")
+  age                  Int
+  region               String              @db.VarChar(50)
+  employmentStatus     EmploymentStatus    @map("employment_status")
+  isSelfEmployed       Boolean             @default(false) @map("is_self_employed")
+  notificationChannel  NotificationChannel @default(EMAIL) @map("notification_channel")
+  notificationEnabled  Boolean             @default(true) @map("notification_enabled")
+  notificationLeadDays Int                 @default(3) @map("notification_lead_days")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+
+  userBenefits UserBenefit[]
+
+  @@map("users")
+}
+
+model Benefit {
+  id              String   @id @default(uuid())
+  title           String   @db.VarChar(200)
+  agency          String   @db.VarChar(100)
+  category        String   @db.VarChar(50)
+  region          String   @db.VarChar(50)
+  amount          String   @db.VarChar(100)
+  applyStartDate  DateTime @map("apply_start_date") @db.Date
+  applyEndDate    DateTime @map("apply_end_date") @db.Date
+  deadline        DateTime @db.Date
+  applicationLink String   @map("application_link") @db.VarChar(500)
+  requirements    Json     @default("[]")
+  documents       Json     @default("[]")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  userBenefits UserBenefit[]
+
+  @@index([deadline])
+  @@index([region, category])
+  @@map("benefits")
+}
+
+model UserBenefit {
+  userId    String            @map("user_id")
+  benefitId String            @map("benefit_id")
+  status    UserBenefitStatus
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  benefit Benefit @relation(fields: [benefitId], references: [id], onDelete: Cascade)
+
+  @@id([userId, benefitId])
+  @@index([userId, status])
+  @@map("user_benefits")
+}

@@ -31,7 +31,7 @@ const recommendedBenefits = [
     amount: "월 20만원",
     deadline: "D-5",
     tag: "마감 임박",
-    highlight: "urgent"
+    highlight: "urgent" as const
   },
   {
     title: "청년 취업성공 패키지",
@@ -39,7 +39,7 @@ const recommendedBenefits = [
     amount: "최대 300만원",
     deadline: "D-18",
     tag: "신규",
-    highlight: "upcoming"
+    highlight: "upcoming" as const
   },
   {
     title: "디지털 역량 교육",
@@ -47,7 +47,7 @@ const recommendedBenefits = [
     amount: "전액 지원",
     deadline: "D-30",
     tag: "추천",
-    highlight: "upcoming"
+    highlight: "upcoming" as const
   }
 ];
 
@@ -81,7 +81,7 @@ const calendarDays = Array.from({ length: daysInMonth }, (_, index) => {
   const day = index + 1;
   return {
     day,
-    status: day === 8 || day === 15 ? "urgent" : day === 21 ? "upcoming" : "normal",
+    status: (day === 8 || day === 15 ? "urgent" : day === 21 ? "upcoming" : "normal") as "urgent" | "upcoming" | "normal",
     count: day % 6 === 0 ? 3 : day % 4 === 0 ? 2 : day % 5 === 0 ? 1 : 0
   };
 });
@@ -163,7 +163,7 @@ export default function Home() {
     []
   );
 
-  const selectedDayEvents = selectedDay ? calendarEvents[selectedDay] ?? [] : [];
+  const selectedDayEvents = selectedDay ? (calendarEvents as Record<number, { title: string; deadline: string }[]>)[selectedDay] ?? [] : [];
   const hasSelectedDay = selectedDay !== null;
 
   const filteredBenefits = myBenefits.filter((benefit) => benefit.statusKey === activeBenefitTab);
