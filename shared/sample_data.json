@@ -1,0 +1,328 @@
+{
+  "users": [
+    {
+      "id": "u_001",
+      "email": "jisu@example.com",
+      "age": 25,
+      "region": "서울",
+      "employmentStatus": "JOB_SEEKER",
+      "isSelfEmployed": false,
+      "notificationChannel": "EMAIL"
+    },
+    {
+      "id": "u_002",
+      "email": "minho@example.com",
+      "age": 29,
+      "region": "서울",
+      "employmentStatus": "EMPLOYED",
+      "isSelfEmployed": false,
+      "notificationChannel": "PUSH"
+    },
+    {
+      "id": "u_003",
+      "email": "yuna@example.com",
+      "age": 22,
+      "region": "부산",
+      "employmentStatus": "STUDENT",
+      "isSelfEmployed": false,
+      "notificationChannel": "EMAIL"
+    },
+    {
+      "id": "u_004",
+      "email": "seojin@example.com",
+      "age": 31,
+      "region": "대전",
+      "employmentStatus": "SELF_EMPLOYED",
+      "isSelfEmployed": true,
+      "notificationChannel": "SMS"
+    },
+    {
+      "id": "u_005",
+      "email": "taeyang@example.com",
+      "age": 27,
+      "region": "광주",
+      "employmentStatus": "EMPLOYED",
+      "isSelfEmployed": false,
+      "notificationChannel": "EMAIL"
+    },
+    {
+      "id": "u_006",
+      "email": "eunji@example.com",
+      "age": 24,
+      "region": "인천",
+      "employmentStatus": "JOB_SEEKER",
+      "isSelfEmployed": false,
+      "notificationChannel": "PUSH"
+    },
+    {
+      "id": "u_007",
+      "email": "hyunwoo@example.com",
+      "age": 30,
+      "region": "경기",
+      "employmentStatus": "EMPLOYED",
+      "isSelfEmployed": false,
+      "notificationChannel": "SMS"
+    },
+    {
+      "id": "u_008",
+      "email": "jiho@example.com",
+      "age": 28,
+      "region": "대구",
+      "employmentStatus": "SELF_EMPLOYED",
+      "isSelfEmployed": true,
+      "notificationChannel": "EMAIL"
+    },
+    {
+      "id": "u_009",
+      "email": "sora@example.com",
+      "age": 23,
+      "region": "울산",
+      "employmentStatus": "STUDENT",
+      "isSelfEmployed": false,
+      "notificationChannel": "PUSH"
+    },
+    {
+      "id": "u_010",
+      "email": "dohyun@example.com",
+      "age": 26,
+      "region": "세종",
+      "employmentStatus": "JOB_SEEKER",
+      "isSelfEmployed": false,
+      "notificationChannel": "EMAIL"
+    }
+  ],
+  "benefits": [
+    {
+      "id": "b_001",
+      "title": "청년 월세 지원",
+      "agency": "서울특별시",
+      "category": "주거",
+      "region": "서울",
+      "amount": "월 20만원",
+      "applyPeriod": {
+        "start": "2025-01-10",
+        "end": "2025-02-10"
+      },
+      "deadline": "2025-02-10",
+      "applicationLink": "https://example.com/apply/001",
+      "requirements": ["만 19~34세", "무주택"],
+      "documents": ["주민등록등본", "임대차계약서"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_002",
+      "title": "취업 준비생 교통비 지원",
+      "agency": "고용노동부",
+      "category": "교통",
+      "region": "전국",
+      "amount": "월 5만원",
+      "applyPeriod": {
+        "start": "2025-02-01",
+        "end": "2025-03-01"
+      },
+      "deadline": "2025-03-01",
+      "applicationLink": "https://example.com/apply/002",
+      "requirements": ["만 18~29세", "구직 등록"],
+      "documents": ["구직등록확인서"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_003",
+      "title": "청년 문화생활 바우처",
+      "agency": "문화체육관광부",
+      "category": "문화",
+      "region": "전국",
+      "amount": "연 10만원",
+      "applyPeriod": {
+        "start": "2025-01-20",
+        "end": "2025-02-20"
+      },
+      "deadline": "2025-02-20",
+      "applicationLink": "https://example.com/apply/003",
+      "requirements": ["만 19~34세"],
+      "documents": ["신분증 사본"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_004",
+      "title": "청년 창업 공간 지원",
+      "agency": "중소벤처기업부",
+      "category": "창업",
+      "region": "서울",
+      "amount": "입주 공간 제공",
+      "applyPeriod": {
+        "start": "2025-03-01",
+        "end": "2025-03-31"
+      },
+      "deadline": "2025-03-31",
+      "applicationLink": "https://example.com/apply/004",
+      "requirements": ["만 19~39세", "창업 3년 이내"],
+      "documents": ["사업자등록증", "사업계획서"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_005",
+      "title": "지역 청년 식비 지원",
+      "agency": "부산광역시",
+      "category": "생활",
+      "region": "부산",
+      "amount": "월 3만원",
+      "applyPeriod": {
+        "start": "2025-01-05",
+        "end": "2025-01-25"
+      },
+      "deadline": "2025-01-25",
+      "applicationLink": "https://example.com/apply/005",
+      "requirements": ["만 19~34세", "부산 거주"],
+      "documents": ["주민등록등본"],
+      "status": "CLOSED"
+    },
+    {
+      "id": "b_006",
+      "title": "청년 자기계발 지원금",
+      "agency": "경기도",
+      "category": "교육",
+      "region": "경기",
+      "amount": "연 30만원",
+      "applyPeriod": {
+        "start": "2025-02-10",
+        "end": "2025-03-10"
+      },
+      "deadline": "2025-03-10",
+      "applicationLink": "https://example.com/apply/006",
+      "requirements": ["만 18~34세", "경기 거주"],
+      "documents": ["주민등록등본", "재직증명서"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_007",
+      "title": "청년 공공임대 특별공급",
+      "agency": "국토교통부",
+      "category": "주거",
+      "region": "전국",
+      "amount": "임대료 할인",
+      "applyPeriod": {
+        "start": "2025-04-01",
+        "end": "2025-04-30"
+      },
+      "deadline": "2025-04-30",
+      "applicationLink": "https://example.com/apply/007",
+      "requirements": ["만 19~39세", "무주택"],
+      "documents": ["주민등록등본", "소득증빙"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_008",
+      "title": "청년 의료비 지원",
+      "agency": "보건복지부",
+      "category": "의료",
+      "region": "전국",
+      "amount": "연 15만원",
+      "applyPeriod": {
+        "start": "2025-01-15",
+        "end": "2025-02-15"
+      },
+      "deadline": "2025-02-15",
+      "applicationLink": "https://example.com/apply/008",
+      "requirements": ["만 19~34세", "저소득층"],
+      "documents": ["소득증명서"],
+      "status": "CLOSED"
+    },
+    {
+      "id": "b_009",
+      "title": "청년 주거 이사비 지원",
+      "agency": "인천광역시",
+      "category": "주거",
+      "region": "인천",
+      "amount": "최대 40만원",
+      "applyPeriod": {
+        "start": "2025-02-05",
+        "end": "2025-02-28"
+      },
+      "deadline": "2025-02-28",
+      "applicationLink": "https://example.com/apply/009",
+      "requirements": ["만 19~34세", "인천 거주"],
+      "documents": ["임대차계약서", "주민등록등본"],
+      "status": "OPEN"
+    },
+    {
+      "id": "b_010",
+      "title": "청년 디지털 역량 강화",
+      "agency": "과학기술정보통신부",
+      "category": "교육",
+      "region": "전국",
+      "amount": "교육비 80% 지원",
+      "applyPeriod": {
+        "start": "2025-03-05",
+        "end": "2025-04-05"
+      },
+      "deadline": "2025-04-05",
+      "applicationLink": "https://example.com/apply/010",
+      "requirements": ["만 18~34세"],
+      "documents": ["신분증 사본"],
+      "status": "OPEN"
+    }
+  ],
+  "userBenefits": [
+    {
+      "userId": "u_001",
+      "benefitId": "b_001",
+      "status": "BOOKMARKED",
+      "createdAt": "2025-01-05T09:00:00Z"
+    },
+    {
+      "userId": "u_002",
+      "benefitId": "b_002",
+      "status": "PREPARING",
+      "createdAt": "2025-02-03T10:15:00Z"
+    },
+    {
+      "userId": "u_003",
+      "benefitId": "b_003",
+      "status": "APPLIED",
+      "createdAt": "2025-01-25T08:40:00Z"
+    },
+    {
+      "userId": "u_004",
+      "benefitId": "b_004",
+      "status": "BOOKMARKED",
+      "createdAt": "2025-03-02T11:20:00Z"
+    },
+    {
+      "userId": "u_005",
+      "benefitId": "b_005",
+      "status": "RECEIVED",
+      "createdAt": "2025-01-18T07:30:00Z"
+    },
+    {
+      "userId": "u_006",
+      "benefitId": "b_006",
+      "status": "PREPARING",
+      "createdAt": "2025-02-12T14:05:00Z"
+    },
+    {
+      "userId": "u_007",
+      "benefitId": "b_007",
+      "status": "APPLIED",
+      "createdAt": "2025-04-02T09:50:00Z"
+    },
+    {
+      "userId": "u_008",
+      "benefitId": "b_008",
+      "status": "RECEIVED",
+      "createdAt": "2025-02-16T12:00:00Z"
+    },
+    {
+      "userId": "u_009",
+      "benefitId": "b_009",
+      "status": "BOOKMARKED",
+      "createdAt": "2025-02-06T16:45:00Z"
+    },
+    {
+      "userId": "u_010",
+      "benefitId": "b_010",
+      "status": "PREPARING",
+      "createdAt": "2025-03-08T09:10:00Z"
+    }
+  ]
+}
