@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'
 import { Response } from 'express'
 import { v4 as uuidv4 } from 'uuid'
+import type { ApiError } from '@benefit-calendar/shared-types'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -15,17 +16,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus()
     const exceptionResponse = exception.getResponse()
 
-    const errorBody = {
+    const errorBody: ApiError = {
       success: false,
       error: {
         code:
           typeof exceptionResponse === 'string'
             ? exceptionResponse
-            : (exceptionResponse as Record<string, unknown>).error || 'UNKNOWN_ERROR',
+            : (exceptionResponse as Record<string, unknown>).error as string || 'UNKNOWN_ERROR',
         message:
           typeof exceptionResponse === 'string'
             ? exceptionResponse
-            : (exceptionResponse as Record<string, unknown>).message || '오류가 발생했습니다.',
+            : (exceptionResponse as Record<string, unknown>).message as string || '오류가 발생했습니다.',
       },
       meta: {
         requestId: uuidv4(),
