@@ -1,8 +1,11 @@
 {
-  "sessionCount": 14,
+  "sessionCount": 35,
   "lastSession": {
-    "startedAt": "2026-01-31T12:01:59.152Z",
+    "startedAt": "2026-01-31T19:12:19.485Z",
     "platform": "claude",
-    "level": "Dynamic"
-  }
+    "level": "Enterprise"
+  },
+  "activeFeature": "db-setup",
+  "phase": "completed",
+  "matchRate": 96
 }
