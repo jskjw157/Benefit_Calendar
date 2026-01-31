@@ -5,13 +5,17 @@
 ## 1) 공통 규칙
 
 ### 1.1 Base URL
-- `/api/v1`
+- 모든 API는 `/api/v1`를 기준 경로로 사용합니다.
+- 예: `https://{host}/api/v1`
 
 ### 1.2 인증
-- MVP 범위에서는 **로그인 이후 토큰(JWT) 기반**을 전제로 하되, 초기 개발 단계에서는 `Authorization: Bearer <token>`을 사용하는 것으로 정의합니다.
+- 인증 방식은 **JWT 기반 Access Token**으로 확정합니다.
+- 요청 헤더: `Authorization: Bearer <accessToken>`
 - 인증이 필요한 엔드포인트는 표기합니다.
 
 ### 1.3 공통 응답 포맷
+- 모든 응답은 아래의 성공/에러 래핑 구조를 따릅니다.
+- 목록형 응답의 `data`에는 `items`, `page`, `pageSize`, `total`을 포함합니다.
 
 **성공**
 ```json
@@ -44,21 +48,32 @@
 ```
 
 ### 1.4 페이징
-- `page`, `pageSize` 사용
-- 기본값: `page=1`, `pageSize=20`
+- `page`, `pageSize` 사용 (1-based)
+- 기본값: `page=1`, `pageSize=20` (최대 100)
 
 ### 1.5 정렬
 - `sort` 파라미터 형식: `field:direction`
-- 예: `sort=deadline:asc`
+- 다중 정렬: `sort=deadline:asc,createdAt:desc`
+- `direction`: `asc` | `desc` (기본값 `asc`)
 
 ### 1.6 날짜 포맷
-- ISO 8601 (예: `2025-01-31`)
+- ISO 8601 사용
+  - 날짜만: `YYYY-MM-DD` (예: `2025-01-31`)
+  - 날짜/시간: `YYYY-MM-DDTHH:mm:ssZ` (예: `2025-01-31T09:00:00Z`)
 
 ---
 
 ## 2) 데이터 모델 (요약)
 
 ### 2.1 User
+- **필수 필드/타입**
+  - `id`: string
+  - `email`: string (unique)
+  - `age`: number (int)
+  - `region`: string
+  - `employmentStatus`: `JOB_SEEKER` | `EMPLOYED` | `STUDENT` | `SELF_EMPLOYED`
+  - `isSelfEmployed`: boolean
+  - `notificationChannel`: `EMAIL` | `SMS` | `PUSH`
 ```json
 {
   "id": "u_001",
@@ -72,6 +87,21 @@
 ```
 
 ### 2.2 Benefit
+- **필수 필드/타입**
+  - `id`: string
+  - `title`: string
+  - `agency`: string
+  - `category`: string
+  - `region`: string
+  - `amount`: string
+  - `applyPeriod.start`: string (date, ISO 8601)
+  - `applyPeriod.end`: string (date, ISO 8601)
+  - `deadline`: string (date, ISO 8601)
+  - `applicationLink`: string (url)
+  - `requirements`: string[]
+  - `documents`: string[]
+- **파생 필드/타입**
+  - `status`: `OPEN` | `CLOSED` (마감일 기준)
 ```json
 {
   "id": "b_001",
@@ -85,6 +115,7 @@
     "end": "2025-02-10"
   },
   "deadline": "2025-02-10",
+  "status": "OPEN",
   "applicationLink": "https://example.com/apply",
   "requirements": ["만 19~34세", "무주택"],
   "documents": ["주민등록등본", "임대차계약서"]
@@ -92,6 +123,11 @@
 ```
 
 ### 2.3 UserBenefit
+- **필수 필드/타입**
+  - `userId`: string
+  - `benefitId`: string
+  - `status`: `BOOKMARKED` | `PREPARING` | `APPLIED` | `RECEIVED`
+  - `createdAt`: string (date-time, ISO 8601)
 ```json
 {
   "userId": "u_001",
