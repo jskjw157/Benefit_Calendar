@@ -17,8 +17,12 @@ export class UserBenefitController {
   }
 
   @Post(':id/bookmark')
-  toggleBookmark(@CurrentUser('id') userId: string, @Param('id') benefitId: string) {
-    return this.userBenefitService.toggleBookmark(userId, benefitId)
+  setBookmark(
+    @CurrentUser('id') userId: string,
+    @Param('id') benefitId: string,
+    @Body() body: { active: boolean }
+  ) {
+    return this.userBenefitService.setBookmark(userId, benefitId, body.active)
   }
 
   @Patch(':id')

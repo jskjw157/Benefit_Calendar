@@ -12,11 +12,12 @@ export class BenefitController {
     @Query('q') q?: string,
     @Query('category') category?: string,
     @Query('region') region?: string,
+    @Query('status') status?: string,
     @Query('sort') sort?: string,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number
   ) {
-    return this.benefitService.findAll({ q, category, region, sort, page, pageSize })
+    return this.benefitService.findAll({ q, category, region, status, sort, page, pageSize })
   }
 
   @Get(':id')

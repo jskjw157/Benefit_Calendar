@@ -25,10 +25,17 @@ export class AuthService {
     }
   }
 
-  async register(data: { email: string; password: string; age: number; region: string }) {
+  async register(data: {
+    email: string
+    password: string
+    age: number
+    region: string
+    employmentStatus?: string
+  }) {
     const existing = await this.prisma.user.findUnique({ where: { email: data.email } })
     if (existing) throw new ConflictException('이미 등록된 이메일입니다.')
 
+    const employmentStatus = (data.employmentStatus || 'JOB_SEEKER') as any
     const passwordHash = await bcrypt.hash(data.password, 10)
     const user = await this.prisma.user.create({
       data: {
@@ -36,16 +43,19 @@ export class AuthService {
         passwordHash,
         age: data.age,
         region: data.region,
-        employmentStatus: 'JOB_SEEKER',
-        isSelfEmployed: false,
+        employmentStatus,
+        isSelfEmployed: employmentStatus === 'SELF_EMPLOYED',
       },
     })
 
     const payload = { sub: user.id, email: user.email }
+    const { passwordHash: _, ...userProfile } = user
+
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
       expiresIn: 900,
+      user: userProfile,
     }
   }
 }

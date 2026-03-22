@@ -14,4 +14,21 @@ export interface RegisterDto {
   password: string
   age: number
   region: string
+  employmentStatus?: string
+}
+
+export interface RegisterResponse extends TokenResponse {
+  user: {
+    id: string
+    email: string
+    age: number
+    region: string
+    employmentStatus: string
+    isSelfEmployed: boolean
+    notificationChannel: string
+    notificationEnabled: boolean
+    notificationLeadDays: number
+    createdAt: string
+    updatedAt: string
+  }
 }
