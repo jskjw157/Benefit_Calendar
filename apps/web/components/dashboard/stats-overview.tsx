@@ -1,7 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/button" // Mistake in import? Button doesn't export Card.
-import { Card as GlassCard, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { TrendingUp, Clock, CheckCircle2 } from "lucide-react"
 
@@ -45,7 +44,7 @@ export function StatsOverview() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 * index }}
         >
-          <GlassCard className="h-full hover:scale-[1.02] transition-transform duration-300">
+          <Card className="h-full hover:scale-[1.02] transition-transform duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.title}
@@ -67,7 +66,7 @@ export function StatsOverview() {
                 {stat.description}
               </p>
             </CardContent>
-          </GlassCard>
+          </Card>
         </motion.div>
       ))}
     </div>

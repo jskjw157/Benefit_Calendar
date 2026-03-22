@@ -1,86 +1,41 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { SearchBar, FilterChip } from "@/components/benefits/search-filters"
-import { BenefitList } from "@/components/benefits/benefit-list"
-import { Benefit } from "@/shared/types/benefit.types"
+import { SortSelect, SortOption } from "@/components/benefits/sort-select"
+import { useBenefits } from "@/shared/hooks/use-benefits"
 
-// Sample Data (To be replaced with API)
-const MOCK_BENEFITS: Partial<Benefit>[] = [
+const BenefitList = dynamic(
+  () => import("@/components/benefits/benefit-list").then(mod => ({ default: mod.BenefitList })),
   {
-    id: "1",
-    title: "청년월세 특별지원",
-    agency: "국토교통부",
-    category: "주거",
-    region: "전국",
-    amount: "월 20만원",
-    status: "OPEN",
-    deadline: "2026-02-25"
-  },
-  {
-    id: "2",
-    title: "경기도 청년기본소득 1분기",
-    agency: "경기도",
-    category: "생활",
-    region: "경기도",
-    amount: "분기별 25만원",
-    status: "OPEN",
-    deadline: "2026-02-28"
-  },
-  {
-    id: "3",
-    title: "국민내일배움카드",
-    agency: "고용노동부",
-    category: "교육",
-    region: "전국",
-    amount: "최대 500만원",
-    status: "OPEN",
-    deadline: "상시"
-  },
-  {
-    id: "4",
-    title: "청년희망적금",
-    agency: "서민금융진흥원",
-    category: "생활",
-    region: "전국",
-    amount: "최대 1200만원",
-    status: "CLOSED",
-    deadline: "2026-01-31"
-  },
-  {
-    id: "5",
-    title: "중소기업 취업청년 전월세보증금 대출",
-    agency: "주택도시기금",
-    category: "주거",
-    region: "전국",
-    amount: "최대 1억원",
-    status: "OPEN",
-    deadline: "2026-12-31"
-  },
-  {
-    id: "6",
-    title: "K-패스 (대중교통비 환급)",
-    agency: "국토교통부",
-    category: "교통",
-    region: "전국",
-    amount: "최대 53% 환급",
-    status: "OPEN",
-    deadline: "상시"
+    loading: () => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="animate-pulse h-80 bg-slate-200 rounded-3xl" />
+        ))}
+      </div>
+    ),
+    ssr: false
   }
-]
+)
 
 const CATEGORIES = ["전체", "주거", "생활", "교통", "교육", "창업", "의료"]
 
 export default function BenefitsPage() {
   const [activeCategory, setActiveCategory] = useState("전체")
   const [searchQuery, setSearchQuery] = useState("")
+  const [sortBy, setSortBy] = useState<SortOption>('deadline:asc')
 
-  const filteredBenefits = MOCK_BENEFITS.filter(benefit => {
-    const matchesCategory = activeCategory === "전체" || benefit.category === activeCategory
-    const matchesSearch = !searchQuery || benefit.title?.includes(searchQuery) || benefit.agency?.includes(searchQuery)
-    return matchesCategory && matchesSearch
+  // Real API call
+  const { benefits, loading, error } = useBenefits({
+    q: searchQuery,
+    category: activeCategory === "전체" ? undefined : activeCategory,
+    status: "OPEN"
   })
+
+  const filteredBenefits = benefits
 
   return (
     <div className="min-h-screen pb-20">
@@ -118,7 +73,7 @@ export default function BenefitsPage() {
 
       {/* Filters & Content */}
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-wrap gap-2 justify-center mb-10">
+        <div className="flex flex-wrap gap-2 justify-center mb-6">
           {CATEGORIES.map((cat, i) => (
             <motion.div
               key={cat}
@@ -126,21 +81,38 @@ export default function BenefitsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.05 }}
             >
-              <FilterChip 
-                label={cat} 
-                active={activeCategory === cat} 
-                onClick={() => setActiveCategory(cat)} 
+              <FilterChip
+                label={cat}
+                active={activeCategory === cat}
+                onClick={() => setActiveCategory(cat)}
               />
             </motion.div>
           ))}
         </div>
 
-        <BenefitList benefits={filteredBenefits} />
-        
-        {filteredBenefits.length === 0 && (
+        <div className="flex items-center justify-between mb-10">
+          <div className="text-sm text-slate-500">
+            전체 <span className="font-semibold text-slate-900">{filteredBenefits.length}</span>개
+          </div>
+          <SortSelect value={sortBy} onChange={setSortBy} />
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="animate-pulse h-80 bg-slate-200 rounded-3xl" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 text-red-500">
+            {error}
+          </div>
+        ) : filteredBenefits.length === 0 ? (
           <div className="text-center py-20 text-slate-500">
             검색 결과가 없습니다. 다른 키워드로 검색해보세요.
           </div>
+        ) : (
+          <BenefitList benefits={filteredBenefits} />
         )}
       </div>
     </div>

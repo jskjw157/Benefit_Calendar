@@ -1,10 +1,11 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useTransform } from "framer-motion"
 import Link from "next/link"
 import { Calendar, Building2, ArrowRight } from "lucide-react"
 import { Benefit } from "@/shared/types/benefit.types"
 import { Button } from "@/components/ui/button"
+import { useRef } from "react"
 
 interface BenefitListProps {
   benefits: Partial<Benefit>[]
@@ -36,21 +37,47 @@ const getCategoryClass = (category: string) => {
   return map[category] || "bg-blue-50 text-blue-700 ring-blue-700/10"
 }
 
-export function BenefitList({ benefits }: BenefitListProps) {
+function BenefitCard({ benefit }: { benefit: Partial<Benefit> }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const rotateX = useTransform(y, [-100, 100], [10, -10])
+  const rotateY = useTransform(x, [-100, 100], [-10, 10])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const mouseX = e.clientX - rect.left - centerX
+    const mouseY = e.clientY - rect.top - centerY
+    x.set(mouseX)
+    y.set(mouseY)
+  }
+
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
   return (
-    <motion.div 
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    <motion.div
+      ref={cardRef}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+      className="group relative h-full bg-white/60 backdrop-blur-lg border border-white/40 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white/80 transition-all duration-500 overflow-hidden"
     >
-      {benefits.map((benefit) => (
-        <motion.div key={benefit.id} variants={item}>
-          <div className="group relative h-full bg-white/60 backdrop-blur-lg border border-white/40 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white/80 transition-all duration-500 hover:-translate-y-1 overflow-hidden">
-            {/* Gradient Blob on Hover */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500" />
-            
-            <div className="relative z-10 flex flex-col h-full">
+      {/* Gradient Blob on Hover */}
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500" />
+
+      <div className="relative z-10 flex flex-col h-full" style={{ transform: "translateZ(50px)" }}>
               <div className="flex justify-between items-start mb-4">
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${getCategoryClass(benefit.category || "")}`}>
                   {benefit.category}
@@ -89,7 +116,21 @@ export function BenefitList({ benefits }: BenefitListProps) {
                 </Link>
               </div>
             </div>
-          </div>
+    </motion.div>
+  )
+}
+
+export function BenefitList({ benefits }: BenefitListProps) {
+  return (
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      {benefits.map((benefit) => (
+        <motion.div key={benefit.id} variants={item}>
+          <BenefitCard benefit={benefit} />
         </motion.div>
       ))}
     </motion.div>

@@ -5,36 +5,56 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, MapPin, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/shared/lib/utils"
+import { useCalendar } from "@/shared/hooks/use-calendar"
+import { benefitService } from "@/shared/services/benefit.service"
+import { Benefit } from "@/shared/types/benefit.types"
 
-// Mock Data for Calendar Events
-const EVENTS = [
-  { date: 25, title: "청년월세 특별지원 마감", type: "deadline" },
-  { date: 28, title: "청년기본소득 신청", type: "start" },
-  { date: 15, title: "행복주택 접수", type: "deadline" },
-]
+interface CalendarEvent {
+  date: number
+  title: string
+  type: "deadline" | "start"
+  benefitId: string
+}
 
 export function CalendarView() {
-  const [currentDate, setCurrentDate] = React.useState(new Date(2026, 1, 1)) // Feb 2026
-  const [selectedDate, setSelectedDate] = React.useState<number | null>(null)
+  const { year, month, days: calendarDays, selectedDate, nextMonth, prevMonth, selectDate } = useCalendar()
+  const [events, setEvents] = React.useState<CalendarEvent[]>([])
 
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
-  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay()
+  React.useEffect(() => {
+    benefitService.getList().then((data) => {
+      const mapped: CalendarEvent[] = []
+      data.items.forEach((b: Benefit) => {
+        const deadlineDate = new Date(b.deadline)
+        if (deadlineDate.getFullYear() === year && deadlineDate.getMonth() === month) {
+          mapped.push({ date: deadlineDate.getDate(), title: `${b.title} 마감`, type: "deadline", benefitId: b.id })
+        }
+        if (b.applyPeriod) {
+          const startDate = new Date(b.applyPeriod.start)
+          if (startDate.getFullYear() === year && startDate.getMonth() === month) {
+            mapped.push({ date: startDate.getDate(), title: `${b.title} 신청 시작`, type: "start", benefitId: b.id })
+          }
+        }
+      })
+      setEvents(mapped)
+    }).catch(() => setEvents([]))
+  }, [year, month])
 
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  const blanks = Array.from({ length: firstDay }, (_, i) => i)
+  const days = calendarDays.map(d => d === null ? null : d)
+  const blanks = days.filter(d => d === null)
+  const actualDays = days.filter((d): d is number => d !== null)
 
   return (
     <div className="w-full max-w-5xl mx-auto">
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-slate-900">
-          {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+          {year}년 {month + 1}월
         </h2>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" className="rounded-full hover:bg-white border-slate-200">
+          <Button variant="outline" size="icon" className="rounded-full hover:bg-white border-slate-200" onClick={prevMonth}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="icon" className="rounded-full hover:bg-white border-slate-200">
+          <Button variant="outline" size="icon" className="rounded-full hover:bg-white border-slate-200" onClick={nextMonth}>
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
@@ -53,21 +73,21 @@ export function CalendarView() {
         layout
         className="grid grid-cols-7 gap-4"
       >
-        {blanks.map((blank) => (
-          <div key={`blank-${blank}`} className="h-32 md:h-40 rounded-3xl" />
+        {blanks.map((_, idx) => (
+          <div key={`blank-${idx}`} className="h-32 md:h-40 rounded-3xl" />
         ))}
-        
-        {days.map((day, i) => {
-          const event = EVENTS.find(e => e.date === day)
+
+        {actualDays.map((day, i) => {
+          const event = events.find(e => e.date === day)
           const isSelected = selectedDate === day
-          
+
           return (
             <motion.div
               key={day}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.02 }}
-              onClick={() => setSelectedDate(day)}
+              onClick={() => selectDate(day)}
               className={cn(
                 "relative h-32 md:h-40 rounded-3xl p-4 transition-all duration-300 cursor-pointer border group overflow-hidden",
                 isSelected 
@@ -122,38 +142,49 @@ export function CalendarView() {
             <div className="flex justify-between items-center mb-6 max-w-5xl mx-auto">
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-1">
-                  {currentDate.getMonth() + 1}월 {selectedDate}일
+                  {month + 1}월 {selectedDate}일
                 </h3>
-                <p className="text-slate-500">신청 마감 1건 · 접수 시작 0건</p>
+                <p className="text-slate-500">
+                  {(() => {
+                    const dayEvents = events.filter(e => e.date === selectedDate)
+                    const deadlines = dayEvents.filter(e => e.type === 'deadline').length
+                    const starts = dayEvents.filter(e => e.type === 'start').length
+                    return `신청 마감 ${deadlines}건 · 접수 시작 ${starts}건`
+                  })()}
+                </p>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 className="md:hidden"
-                onClick={() => setSelectedDate(null)}
+                onClick={() => selectDate(0)}
               >
                 <ChevronRight className="h-6 w-6 rotate-90" />
               </Button>
             </div>
 
             <div className="max-w-5xl mx-auto grid gap-4">
-               {/* Mock Event Card */}
-               <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                 <div className="flex items-center gap-4">
-                   <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm">
-                     D-Day
-                   </div>
-                   <div>
-                     <h4 className="font-bold text-slate-900">청년월세 특별지원</h4>
-                     <div className="flex items-center gap-2 text-sm text-slate-500">
-                       <MapPin className="h-3 w-3" /> 전국
+               {events.filter(e => e.date === selectedDate).map((ev, idx) => (
+                 <div key={idx} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                   <div className="flex items-center gap-4">
+                     <div className={cn(
+                       "h-12 w-12 rounded-full flex items-center justify-center font-bold text-sm",
+                       ev.type === 'deadline' ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
+                     )}>
+                       {ev.type === 'deadline' ? '마감' : '시작'}
+                     </div>
+                     <div>
+                       <h4 className="font-bold text-slate-900">{ev.title}</h4>
                      </div>
                    </div>
+                   <Button size="icon" variant="ghost" className="rounded-full">
+                     <ArrowRight className="h-5 w-5 text-slate-400" />
+                   </Button>
                  </div>
-                 <Button size="icon" variant="ghost" className="rounded-full">
-                   <ArrowRight className="h-5 w-5 text-slate-400" />
-                 </Button>
-               </div>
+               ))}
+               {events.filter(e => e.date === selectedDate).length === 0 && (
+                 <p className="text-center text-slate-400 py-4">이 날짜에 혜택 일정이 없습니다.</p>
+               )}
             </div>
           </motion.div>
         )}

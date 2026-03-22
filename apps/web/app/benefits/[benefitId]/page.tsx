@@ -1,15 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ArrowLeft, Calendar, Share2, ExternalLink, Bookmark, CheckCircle2, Building2 } from "lucide-react"
+import { ArrowLeft, Calendar, Share2, ExternalLink, Bookmark, CheckCircle2, Building2, Bell, Download, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Benefit } from "@/shared/types/benefit.types"
-
-// Mock Data (Same as benefits page for consistency)
+import { Breadcrumb } from "@/components/layout/breadcrumb"
+import { useRef, useState, useEffect } from "react"
+import { benefitService } from "@/shared/services/benefit.service"
 const getCategoryClass = (category: string) => {
   const map: Record<string, string> = {
     "주거": "category-housing",
@@ -23,50 +24,81 @@ const getCategoryClass = (category: string) => {
   return map[category] || "bg-blue-50 text-blue-700 ring-blue-700/10"
 }
 
-const MOCK_DATA: Record<string, Partial<Benefit>> = {
-  "1": {
-    id: "1",
-    title: "청년월세 특별지원",
-    agency: "국토교통부",
-    category: "주거",
-    region: "전국",
-    amount: "월 20만원",
-    status: "OPEN",
-    deadline: "2026-02-25",
-    applyPeriod: { start: "2026-01-01", end: "2026-02-25" },
-    applicationLink: "https://bokjiro.go.kr",
-    requirements: [
-      "만 19세 ~ 34세 독립 거주 무주택 청년",
-      "보증금 5천만원 이하 및 월세 60만원 이하",
-      "중위소득 60% 이하 (원가구 100% 이하)"
-    ],
-    documents: [
-      "월세지원 신청서",
-      "임대차계약서 사본",
-      "통장 사본",
-      "가족관계증명서"
-    ]
-  },
-  // Add fallback for ID 2 for demo
-  "2": {
-    id: "2",
-    title: "경기도 청년기본소득 1분기",
-    agency: "경기도",
-    category: "생활",
-    region: "경기도",
-    amount: "분기별 25만원",
-    status: "OPEN",
-    deadline: "2026-02-28",
-    applyPeriod: { start: "2026-02-01", end: "2026-02-28" },
-    requirements: ["경기도 내 3년 이상 거주", "만 24세 청년"],
-    documents: ["주민등록초본"]
+function MagneticButton({ children, className, variant, size, ...props }: React.ComponentProps<typeof Button>) {
+  const btnRef = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!btnRef.current) return
+    const rect = btnRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    x.set((e.clientX - centerX) * 0.3)
+    y.set((e.clientY - centerY) * 0.3)
   }
+
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  return (
+    <motion.div
+      ref={btnRef}
+      style={{ x, y, display: "inline-block" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+    >
+      <Button variant={variant} size={size} className={className} {...props}>
+        {children}
+      </Button>
+    </motion.div>
+  )
 }
 
 export default function BenefitDetailPage() {
   const params = useParams()
   const id = params.benefitId as string
-  const benefit = MOCK_DATA[id] || MOCK_DATA["1"] // Fallback to ID 1 if not found
+  const [benefit, setBenefit] = useState<Partial<Benefit>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    benefitService.getById(id)
+      .then((data) => setBenefit(data))
+      .catch(() => setBenefit({ id, title: '혜택을 찾을 수 없습니다', agency: '-', category: '생활', region: '-', amount: '-' }))
+      .finally(() => setLoading(false))
+  }, [id])
+
+  const timelineRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: loading ? undefined : timelineRef,
+    offset: ["start end", "end start"]
+  })
+
+  const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1])
+
+  const handleSetAlert = (benefitId: string) => {
+    // WebSocket 알림 설정 (Mock)
+    console.log('알림 설정:', benefitId)
+    alert('마감 3일 전 알림이 설정되었습니다')
+  }
+
+  const handleDownloadDocuments = () => {
+    // 서류 패키지 다운로드 (Mock)
+    const docs = benefit.documents?.join(', ')
+    console.log('다운로드:', docs)
+    alert('서류 패키지를 준비하고 있습니다...')
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-slate-400 text-lg">불러오는 중...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen pb-20 relative">
@@ -74,8 +106,20 @@ export default function BenefitDetailPage() {
       <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-blue-50/50 to-transparent -z-10" />
 
       <div className="container mx-auto px-4 md:px-6 pt-8 md:pt-12 max-w-5xl">
+        {/* Breadcrumb */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Breadcrumb items={[
+            { label: '혜택 탐색', href: '/benefits' },
+            { label: benefit.category || '주거', href: `/benefits?category=${benefit.category}` },
+            { label: benefit.title || '청년월세 특별지원' }
+          ]} />
+        </motion.div>
+
         {/* Navigation */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           className="mb-8"
@@ -127,9 +171,22 @@ export default function BenefitDetailPage() {
                   <span className="text-sm font-medium text-orange-600 block mb-1">신청 마감</span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-slate-900">{benefit.deadline}</span>
-                    <span className="text-sm font-bold text-orange-500 bg-white px-2 py-0.5 rounded-full shadow-sm">
-                      D-5
-                    </span>
+                    <motion.div
+                      animate={{
+                        y: [0, -10, 0],
+                        rotateZ: [0, 5, -5, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      <div style={{ transform: "translateZ(20px)" }} className="text-sm font-bold text-orange-500 bg-white px-2 py-0.5 rounded-full shadow-sm">
+                        D-5
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
               </Card>
@@ -160,12 +217,28 @@ export default function BenefitDetailPage() {
               </div>
             </section>
 
-            {/* Timeline Section (3D Interactive) */}
-            <section className="space-y-6 pt-8">
+            {/* Timeline Section (3D Interactive + Scroll-Linked) */}
+            <section ref={timelineRef} className="space-y-6 pt-8">
               <h2 className="text-xl font-bold text-slate-900">신청 절차</h2>
               <div className="relative">
-                {/* Vertical Line */}
-                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-violet-500 to-transparent" />
+                {/* Animated SVG Line */}
+                <svg className="absolute left-6 top-0 bottom-0 w-0.5 h-full" style={{ overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id="timeline-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#3B82F6" />
+                      <stop offset="50%" stopColor="#8B5CF6" />
+                      <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <motion.path
+                    d="M 1 0 L 1 100%"
+                    stroke="url(#timeline-gradient)"
+                    strokeWidth="2"
+                    fill="none"
+                    style={{ pathLength }}
+                    initial={{ pathLength: 0 }}
+                  />
+                </svg>
 
                 {/* Timeline Steps */}
                 <div className="space-y-6">
@@ -250,22 +323,22 @@ export default function BenefitDetailPage() {
               </div>
             </section>
 
-            {/* FAQ Accordion (Kinetic Typography) */}
-            <section className="space-y-6 pt-8">
+            {/* FAQ Accordion */}
+            <section className="space-y-4 pt-8">
               <h2 className="text-xl font-bold text-slate-900">자주 묻는 질문</h2>
               <div className="space-y-3">
                 {[
                   {
-                    q: "보증금 5천만원, 월세 65만원인데 신청 가능한가요?",
-                    a: "아쉽게도 월세 60만원 이하만 신청 가능합니다. 계약서 재조정을 고려해보세요."
+                    question: "기존에 다른 주거 지원을 받고 있어도 신청할 수 있나요?",
+                    answer: "중복 지원 여부는 혜택 종류에 따라 다릅니다. 월세 지원의 경우 기존에 국토부 주거급여를 받고 계시다면 중복 신청이 제한될 수 있습니다. 자세한 사항은 해당 기관에 문의하시기 바랍니다."
                   },
                   {
-                    q: "부모님과 같이 살고 있는데 신청할 수 있나요?",
-                    a: "독립 거주가 필수 조건입니다. 전입신고가 본인 명의로 되어 있어야 합니다."
+                    question: "서류는 온라인으로 제출 가능한가요?",
+                    answer: "네, 대부분의 혜택은 복지로(bokjiro.go.kr)에서 온라인으로 신청 및 서류 제출이 가능합니다. 다만 일부 혜택은 방문 신청이 필요할 수 있으니 신청 안내를 확인해주세요."
                   },
                   {
-                    q: "재신청이 가능한가요?",
-                    a: "최초 12개월 지원 후, 조건 충족 시 최대 12개월 연장 가능합니다."
+                    question: "신청 결과는 언제 확인할 수 있나요?",
+                    answer: "심사 기간은 보통 신청 후 2-4주 소요되며, 결과는 신청 시 등록하신 연락처로 개별 통보됩니다. 복지로 마이페이지에서도 진행 상황을 확인하실 수 있습니다."
                   }
                 ].map((faq, i) => {
                   const [isOpen, setIsOpen] = React.useState(false)
@@ -277,23 +350,23 @@ export default function BenefitDetailPage() {
                       whileInView={{ opacity: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.1 }}
-                      className="bg-white rounded-2xl border border-slate-100 overflow-hidden"
+                      className="glass-card overflow-hidden"
                     >
                       <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition-colors"
+                        className="w-full px-6 py-4 text-left flex justify-between items-center"
                       >
                         <motion.span
-                          className="font-semibold text-slate-900 pr-4"
                           animate={{ x: isOpen ? 4 : 0 }}
+                          className="font-medium text-slate-900"
                         >
-                          Q. {faq.q}
+                          {faq.question}
                         </motion.span>
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
-                          transition={{ type: "spring", stiffness: 300 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </motion.div>
@@ -307,8 +380,8 @@ export default function BenefitDetailPage() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5 pt-2 text-slate-600 bg-slate-50/50">
-                          A. {faq.a}
+                        <div className="px-6 pb-4 text-sm text-slate-600">
+                          {faq.answer}
                         </div>
                       </motion.div>
                     </motion.div>
@@ -338,23 +411,75 @@ export default function BenefitDetailPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <Button size="lg" className="w-full text-lg shadow-lg shadow-blue-500/20 font-semibold h-14 rounded-2xl">
+                  <MagneticButton size="lg" className="w-full text-lg shadow-lg shadow-blue-500/20 font-semibold h-14 rounded-2xl">
                     지금 신청하기
                     <ExternalLink className="ml-2 h-5 w-5" />
-                  </Button>
+                  </MagneticButton>
+
+                  <MagneticButton
+                    variant="outline"
+                    size="lg"
+                    className="w-full border-blue-200 hover:bg-blue-50 hover:text-blue-600 h-12 rounded-xl"
+                    onClick={() => handleSetAlert(benefit.id || '1')}
+                  >
+                    <Bell className="mr-2 h-5 w-5" />
+                    마감 3일 전 알림받기
+                  </MagneticButton>
+
+                  <MagneticButton
+                    variant="outline"
+                    size="lg"
+                    className="w-full border-slate-200 hover:bg-slate-50 h-12 rounded-xl"
+                    onClick={() => handleDownloadDocuments()}
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    필요 서류 다운로드
+                  </MagneticButton>
+
                   <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200">
+                    <MagneticButton variant="outline" className="w-full h-12 rounded-xl border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200">
                       <Bookmark className="mr-2 h-4 w-4" />
                       저장
-                    </Button>
-                    <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 hover:bg-slate-50">
+                    </MagneticButton>
+                    <MagneticButton variant="outline" className="w-full h-12 rounded-xl border-slate-200 hover:bg-slate-50">
                       <Share2 className="mr-2 h-4 w-4" />
                       공유
-                    </Button>
+                    </MagneticButton>
                   </div>
                 </div>
                 
-                <p className="text-xs text-center text-slate-400">
+                {/* 신청 요약 */}
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <h3 className="font-semibold text-slate-900 mb-3">신청 요약</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">지역</span>
+                      <span className="font-medium text-slate-900">{benefit.region}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">담당 기관</span>
+                      <span className="font-medium text-slate-900">{benefit.agency}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">신청 링크</span>
+                      <a
+                        href={benefit.applicationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                      >
+                        바로가기 <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100">
+                      <div className="text-slate-500 mb-1">문의</div>
+                      <div className="font-medium text-slate-900">02-1234-5678</div>
+                      <div className="text-xs text-slate-400 mt-1">평일 09:00-18:00</div>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-center text-slate-400 mt-4">
                   신청 버튼을 누르면 해당 기관 페이지로 이동합니다.
                 </p>
               </Card>

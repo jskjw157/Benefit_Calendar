@@ -1,9 +1,43 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform, useMotionValue } from "framer-motion"
 import { ArrowRight, Sparkles, TrendingUp, Calendar as CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRef } from "react"
+
+function MagneticButton({ children, className, variant, size, ...props }: React.ComponentProps<typeof Button>) {
+  const btnRef = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!btnRef.current) return
+    const rect = btnRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    x.set((e.clientX - centerX) * 0.3)
+    y.set((e.clientY - centerY) * 0.3)
+  }
+
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  return (
+    <motion.div
+      ref={btnRef}
+      style={{ x, y, display: "inline-block" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+    >
+      <Button variant={variant} size={size} className={className} {...props}>
+        {children}
+      </Button>
+    </motion.div>
+  )
+}
 
 export function DashboardHero() {
   const ref = useRef<HTMLDivElement>(null)
@@ -61,21 +95,21 @@ export function DashboardHero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="flex flex-wrap gap-3"
         >
-          <Button 
-            size="lg" 
+          <MagneticButton
+            size="lg"
             className="bg-white text-blue-600 hover:bg-blue-50 border-0 font-semibold shadow-xl shadow-blue-900/10"
           >
             추천 혜택 보기
             <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          <Button 
-            variant="glass" 
-            size="lg" 
+          </MagneticButton>
+          <MagneticButton
+            variant="glass"
+            size="lg"
             className="text-white hover:bg-white/20 border-white/30"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             이번 달 일정 확인
-          </Button>
+          </MagneticButton>
         </motion.div>
       </motion.div>
     </div>
