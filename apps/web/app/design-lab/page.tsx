@@ -2,105 +2,138 @@
 
 import { motion } from "framer-motion"
 import { SpotlightCard } from "@/components/design-lab/spotlight-card"
-import { ArrowUpRight } from "lucide-react"
+import { InteractiveTimeline } from "@/components/design-lab/interactive-timeline"
+import { ArrowUpRight, Sparkles, Zap, ShieldCheck } from "lucide-react"
 
 export default function DesignLabPage() {
   return (
-    <div className="min-h-screen bg-slate-50 p-8 md:p-20 relative overflow-hidden">
-      {/* Background Noise for texture */}
-      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
+    <div className="min-h-screen bg-[#f8fafc] p-8 md:p-20 relative overflow-hidden font-sans">
+      {/* 1. Global Noise Overlay */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] noise z-50"></div>
       
-      {/* 1. Big Typography Section */}
-      <section className="mb-32 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h1 className="text-[5rem] md:text-[8rem] font-black leading-[0.9] tracking-tighter text-slate-900 mb-6">
-            BENEFIT
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-violet-600 to-blue-600 animate-gradient-x bg-[length:200%_auto]">
-              CALENDAR
-            </span>
-          </h1>
-          <p className="text-2xl md:text-3xl font-medium text-slate-500 max-w-2xl leading-relaxed">
-            청년을 위한 지원금, <span className="text-slate-900 font-bold decoration-blue-500/30 underline decoration-4 underline-offset-4">월 20만원</span>부터 시작하세요.
-            <br />
-            놓치면 사라지는 혜택을 잡아드립니다.
-          </p>
-        </motion.div>
-      </section>
+      {/* 2. Abstract Background Blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-400/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
 
-      {/* 2. Interactive Spotlight Cards Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-32">
         
-        {/* Card 1: Amount Highlight */}
-        <SpotlightCard className="h-80 group cursor-pointer" spotlightColor="rgba(59, 130, 246, 0.2)">
-          <div className="p-8 h-full flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider">
-                Support
+        {/* SECTION 1: HYPER TYPOGRAPHY HERO */}
+        <section className="relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="flex items-center gap-2 mb-8">
+               <div className="h-px w-12 bg-slate-300"></div>
+               <span className="text-sm font-black tracking-[0.2em] text-blue-600 uppercase">Design Lab v2.0</span>
+            </div>
+            
+            <h1 className="text-[clamp(4rem,15vw,10rem)] font-black leading-[0.85] tracking-[-0.05em] text-slate-900 mb-12">
+              Bolder.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 animate-gradient-x bg-[length:200%_auto]">
+                Smarter.
               </span>
-              <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                청년월세 특별지원
-              </h3>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 mb-1 font-medium">최대 지원금</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-6xl font-black text-slate-900 tracking-tighter">240</span>
-                <span className="text-2xl font-bold text-slate-400">만원/년</span>
-              </div>
-            </div>
-            <ArrowUpRight className="absolute top-8 right-8 text-slate-300 group-hover:text-blue-500 group-hover:rotate-45 transition-all duration-300 transform" />
-          </div>
-        </SpotlightCard>
-
-        {/* Card 2: D-Day Highlight */}
-        <SpotlightCard className="h-80 group cursor-pointer" spotlightColor="rgba(249, 115, 22, 0.2)">
-          <div className="p-8 h-full flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="inline-block px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold uppercase tracking-wider">
-                Deadline
-              </span>
-              <h3 className="text-2xl font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
-                청년희망적금
-              </h3>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 mb-1 font-medium">마감까지</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-6xl font-black text-slate-900 tracking-tighter">D-2</span>
-              </div>
-              <p className="text-sm text-orange-500 mt-2 font-medium">서두르세요! 곧 마감됩니다.</p>
-            </div>
-             <ArrowUpRight className="absolute top-8 right-8 text-slate-300 group-hover:text-orange-500 group-hover:rotate-45 transition-all duration-300 transform" />
-          </div>
-        </SpotlightCard>
-
-         {/* Card 3: New Feature */}
-         <SpotlightCard className="h-80 group cursor-pointer" spotlightColor="rgba(139, 92, 246, 0.2)">
-          <div className="p-8 h-full flex flex-col justify-between">
-             <div className="space-y-2">
-              <span className="inline-block px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-bold uppercase tracking-wider">
-                New
-              </span>
-              <h3 className="text-2xl font-bold text-slate-800 group-hover:text-violet-600 transition-colors">
-                K-패스
-              </h3>
-            </div>
-            <div className="flex-1 flex items-center justify-center">
-               <div className="text-center">
-                  <p className="text-4xl font-black text-slate-900 tracking-tight">53%</p>
-                  <p className="text-sm text-slate-500 font-medium">교통비 환급</p>
+            </h1>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
+               <p className="text-2xl md:text-3xl font-medium text-slate-500 leading-[1.4] tracking-tight">
+                우리는 복잡한 정부 정책을 <span className="text-slate-900 font-bold">하나의 선명한 흐름</span>으로 바꿉니다. 
+                더 크고, 더 직관적이며, 더 아름답게.
+               </p>
+               <div className="flex gap-4">
+                  <div className="flex flex-col">
+                     <span className="text-5xl font-black text-slate-900">50k+</span>
+                     <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Users</span>
+                  </div>
+                  <div className="h-12 w-px bg-slate-200 mx-4"></div>
+                  <div className="flex flex-col">
+                     <span className="text-5xl font-black text-slate-900">98%</span>
+                     <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Satisfaction</span>
+                  </div>
                </div>
             </div>
-             <ArrowUpRight className="absolute top-8 right-8 text-slate-300 group-hover:text-violet-500 group-hover:rotate-45 transition-all duration-300 transform" />
-          </div>
-        </SpotlightCard>
+          </motion.div>
+        </section>
 
-      </section>
+        {/* SECTION 2: INTERACTIVE PROCESS (TIMELINE) */}
+        <section className="space-y-12">
+          <div className="flex items-end justify-between">
+            <h2 className="text-5xl font-black tracking-tighter text-slate-900">
+              신청 프로세스
+            </h2>
+            <p className="text-slate-500 font-medium mb-1">복잡한 절차를 4단계로 압축했습니다.</p>
+          </div>
+          <InteractiveTimeline />
+        </section>
+
+        {/* SECTION 3: FEATURE HIGHLIGHTS (SPOTLIGHT CARDS) */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
+          <SpotlightCard className="h-[450px] group border-blue-100/50" spotlightColor="rgba(59, 130, 246, 0.25)">
+            <div className="p-10 h-full flex flex-col">
+              <div className="p-4 bg-blue-50 w-fit rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
+                <Zap className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">초고속 매칭</h3>
+              <p className="text-lg text-slate-500 leading-relaxed mb-auto">
+                AI가 당신의 프로필을 분석하여 0.1초 만에 가장 적합한 혜택 5가지를 추천합니다.
+              </p>
+              <div className="pt-8 flex items-center justify-between">
+                 <span className="text-4xl font-black text-blue-600">0.1s</span>
+                 <div className="h-12 w-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                    <ArrowUpRight className="h-6 w-6" />
+                 </div>
+              </div>
+            </div>
+          </SpotlightCard>
+
+          <SpotlightCard className="h-[450px] group border-orange-100/50" spotlightColor="rgba(249, 115, 22, 0.25)">
+            <div className="p-10 h-full flex flex-col">
+              <div className="p-4 bg-orange-50 w-fit rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
+                <Sparkles className="h-8 w-8 text-orange-600" />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">스마트 알림</h3>
+              <p className="text-lg text-slate-500 leading-relaxed mb-auto">
+                마감 3일 전, 잊지 않도록 당신이 선호하는 채널로 강력한 알람을 보내드립니다.
+              </p>
+              <div className="pt-8 flex items-center justify-between">
+                 <span className="text-4xl font-black text-orange-600">D-3</span>
+                 <div className="h-12 w-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                    <ArrowUpRight className="h-6 w-6" />
+                 </div>
+              </div>
+            </div>
+          </SpotlightCard>
+
+          <SpotlightCard className="h-[450px] group border-emerald-100/50" spotlightColor="rgba(16, 185, 129, 0.25)">
+            <div className="p-10 h-full flex flex-col">
+              <div className="p-4 bg-emerald-50 w-fit rounded-2xl mb-8 group-hover:scale-110 transition-transform duration-500">
+                <ShieldCheck className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">안전한 데이터</h3>
+              <p className="text-lg text-slate-500 leading-relaxed mb-auto">
+                당신의 소중한 개인정보는 금융권 수준의 보안 기술로 철저하게 보호됩니다.
+              </p>
+              <div className="pt-8 flex items-center justify-between">
+                 <span className="text-4xl font-black text-emerald-600">AES</span>
+                 <div className="h-12 w-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                    <ArrowUpRight className="h-6 w-6" />
+                 </div>
+              </div>
+            </div>
+          </SpotlightCard>
+
+        </section>
+
+        {/* FOOTER MOCKUP */}
+        <footer className="pt-20 pb-10 border-t border-slate-200 text-center">
+           <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-xs">
+              Benefit Calendar Design Lab © 2026
+           </p>
+        </footer>
+
+      </div>
     </div>
   )
 }

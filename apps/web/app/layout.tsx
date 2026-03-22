@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
+import { ClientProviders } from "@/components/layout/client-providers";
 import { cn } from "@/shared/lib/utils";
 
 const notoSansKr = Noto_Sans_KR({
@@ -32,10 +33,12 @@ export default function RootLayout({
         <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-50 pointer-events-none" />
         <div className="fixed inset-0 -z-10 h-full w-full bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-slate-50 to-white opacity-40 pointer-events-none" />
 
-        <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-        </div>
+        <ClientProviders>
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+          </div>
+        </ClientProviders>
       </body>
     </html>
   );
