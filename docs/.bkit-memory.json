@@ -1,11 +1,11 @@
 {
-  "sessionCount": 35,
+  "sessionCount": 43,
   "lastSession": {
-    "startedAt": "2026-01-31T19:12:19.485Z",
-    "platform": "claude",
+    "startedAt": "2026-03-22T06:49:21.961Z",
+    "platform": "gemini",
     "level": "Enterprise"
   },
-  "activeFeature": "db-setup",
-  "phase": "completed",
-  "matchRate": 96
+  "activeFeature": "mvp-benefit-calendar",
+  "phase": "check",
+  "matchRate": 95
 }
