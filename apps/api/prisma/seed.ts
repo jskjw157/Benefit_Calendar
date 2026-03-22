@@ -150,11 +150,33 @@ async function main() {
     },
   ]
 
+  const createdBenefits = []
   for (const benefit of benefits) {
-    await prisma.benefit.create({ data: benefit })
+    const created = await prisma.benefit.create({ data: benefit })
+    createdBenefits.push(created)
   }
 
-  console.log(`Seed completed: 1 user, ${benefits.length} benefits`)
+  // UserBenefit 데이터 (sample_data.json과 유사)
+  const userBenefitStatuses: Array<{ index: number; status: 'BOOKMARKED' | 'PREPARING' | 'APPLIED' | 'RECEIVED' }> = [
+    { index: 0, status: 'BOOKMARKED' },  // 청년 월세 지원
+    { index: 1, status: 'PREPARING' },   // 취업 준비생 교통비
+    { index: 2, status: 'APPLIED' },     // 청년 문화생활 바우처
+    { index: 3, status: 'BOOKMARKED' },  // 청년 창업 공간
+    { index: 4, status: 'RECEIVED' },    // 지역 청년 식비
+    { index: 5, status: 'BOOKMARKED' },  // 청년 자기계발
+  ]
+
+  for (const ub of userBenefitStatuses) {
+    await prisma.userBenefit.create({
+      data: {
+        userId: user.id,
+        benefitId: createdBenefits[ub.index].id,
+        status: ub.status,
+      },
+    })
+  }
+
+  console.log(`Seed completed: 1 user, ${createdBenefits.length} benefits, ${userBenefitStatuses.length} userBenefits`)
 }
 
 main()

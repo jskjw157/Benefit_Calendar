@@ -19,22 +19,45 @@ export class UserBenefitService {
     return { items, total: items.length }
   }
 
+  async setBookmark(userId: string, benefitId: string, active: boolean) {
+    const existing = await this.prisma.userBenefit.findUnique({
+      where: { userId_benefitId: { userId, benefitId } },
+    })
+
+    if (active) {
+      if (!existing) {
+        await this.prisma.userBenefit.create({
+          data: { userId, benefitId, status: 'BOOKMARKED' },
+        })
+      }
+      return { benefitId, bookmarked: true }
+    } else {
+      if (existing) {
+        await this.prisma.userBenefit.delete({
+          where: { userId_benefitId: { userId, benefitId } },
+        })
+      }
+      return { benefitId, bookmarked: false }
+    }
+  }
+
   async toggleBookmark(userId: string, benefitId: string) {
     const existing = await this.prisma.userBenefit.findUnique({
       where: { userId_benefitId: { userId, benefitId } },
     })
 
+    // Toggle: if exists, delete it; if not, create it
     if (existing) {
       await this.prisma.userBenefit.delete({
         where: { userId_benefitId: { userId, benefitId } },
       })
-      return { bookmarked: false }
+      return { benefitId, bookmarked: false }
+    } else {
+      await this.prisma.userBenefit.create({
+        data: { userId, benefitId, status: 'BOOKMARKED' },
+      })
+      return { benefitId, bookmarked: true }
     }
-
-    await this.prisma.userBenefit.create({
-      data: { userId, benefitId, status: 'BOOKMARKED' },
-    })
-    return { bookmarked: true }
   }
 
   async updateStatus(userId: string, benefitId: string, status: string) {
