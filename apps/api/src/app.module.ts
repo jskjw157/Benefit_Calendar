@@ -7,6 +7,7 @@ import { BenefitModule } from './modules/benefit/benefit.module'
 import { UserBenefitModule } from './modules/user-benefit/user-benefit.module'
 import { NotificationModule } from './modules/notification/notification.module'
 import { DashboardModule } from './modules/dashboard/dashboard.module'
+import { CrawlerModule } from './modules/crawler/crawler.module'
 import { HealthController } from './health.controller'
 
 @Module({
@@ -21,6 +22,7 @@ import { HealthController } from './health.controller'
     UserBenefitModule,
     NotificationModule,
     DashboardModule,
+    CrawlerModule,
   ],
   controllers: [HealthController],
   providers: [PrismaService],
