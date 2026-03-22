@@ -10,3 +10,11 @@ yarn-error.log*
 .turbo
 *.tsbuildinfo
 test-results/
+
+# PDCA development process artifacts
+docs/.bkit-memory.json
+docs/.pdca-snapshots/
+docs/01-plan/
+docs/02-design/
+docs/03-analysis/
+docs/04-report/
