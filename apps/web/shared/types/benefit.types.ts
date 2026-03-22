@@ -20,3 +20,14 @@ export interface Benefit {
   documents: string[]
   status: BenefitStatus
 }
+
+export interface BenefitSummary {
+  id: string
+  title: string
+  agency: string
+  category: string
+  region: string
+  amount: string
+  deadline: string
+  status: BenefitStatus
+}
