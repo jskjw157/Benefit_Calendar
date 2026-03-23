@@ -26,6 +26,7 @@ export default function LoginPage() {
       const json = await res.json()
 
       if (json.success) {
+        localStorage.setItem('bc_token', json.data.token)
         router.push('/')
       } else {
         setError(json.error?.message || '로그인에 실패했습니다')

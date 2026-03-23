@@ -5,8 +5,10 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.env
 .env.local
 .env.*.local
+apps/api/.env
 .turbo
 *.tsbuildinfo
 test-results/

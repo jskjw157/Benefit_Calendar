@@ -1,6 +1,8 @@
-import { Controller, Get, Post, HttpCode, HttpStatus } from '@nestjs/common'
+import { Controller, Get, Post, HttpCode, HttpStatus, UseGuards } from '@nestjs/common'
 import { CrawlerService, SyncResult } from './crawler.service'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
+@UseGuards(JwtAuthGuard)
 @Controller('admin/crawler')
 export class CrawlerController {
   constructor(private readonly crawlerService: CrawlerService) {}
