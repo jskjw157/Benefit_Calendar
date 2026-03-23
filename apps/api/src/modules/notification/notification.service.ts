@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { NotificationChannel } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
+import { UpdateNotificationDto } from './dto/update-notification.dto'
 
 @Injectable()
 export class NotificationService {
@@ -16,15 +18,19 @@ export class NotificationService {
     }
   }
 
-  async updateSettings(userId: string, data: Record<string, unknown>) {
-    const updateData: Record<string, unknown> = {}
+  async updateSettings(userId: string, data: UpdateNotificationDto) {
+    const updateData: {
+      notificationChannel?: NotificationChannel
+      notificationEnabled?: boolean
+      notificationLeadDays?: number
+    } = {}
     if (data.channel !== undefined) updateData.notificationChannel = data.channel
     if (data.enabled !== undefined) updateData.notificationEnabled = data.enabled
     if (data.leadDays !== undefined) updateData.notificationLeadDays = data.leadDays
 
     await this.prisma.user.update({
       where: { id: userId },
-      data: updateData as Parameters<typeof this.prisma.user.update>[0]['data'],
+      data: updateData,
     })
 
     return this.getSettings(userId)

@@ -32,7 +32,8 @@ export default function BenefitsPage() {
   const { benefits, loading, error } = useBenefits({
     q: searchQuery,
     category: activeCategory === "전체" ? undefined : activeCategory,
-    status: "OPEN"
+    status: "OPEN",
+    sort: sortBy
   })
 
   const filteredBenefits = benefits

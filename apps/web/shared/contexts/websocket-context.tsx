@@ -48,7 +48,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     ]
 
     // Simulate initial notification
-    setTimeout(() => {
+    const initialTimeout = setTimeout(() => {
       setNotifications([mockNotifications[0]])
       setIsConnected(true)
     }, 2000)
@@ -90,7 +90,10 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     setIsConnected(true)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearTimeout(initialTimeout)
+      clearInterval(interval)
+    }
   }, [])
 
   return (

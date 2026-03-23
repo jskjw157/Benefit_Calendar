@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { AppModule } from './app.module'
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter'
 import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 
@@ -23,7 +24,9 @@ async function bootstrap() {
     })
   )
 
-  app.useGlobalFilters(new HttpExceptionFilter())
+  // AllExceptionsFilter must be registered before HttpExceptionFilter
+  // so that HttpExceptions are still handled by the more specific filter
+  app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter())
   app.useGlobalInterceptors(new ResponseInterceptor())
 
   const config = new DocumentBuilder()

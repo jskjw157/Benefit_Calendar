@@ -16,9 +16,12 @@ interface FindAllParams {
 export class BenefitService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private readonly SORT_FIELDS = ['deadline', 'title', 'agency', 'category', 'region'] as const
+  private readonly SORT_DIRECTIONS = ['asc', 'desc'] as const
+
   async findAll(params: FindAllParams) {
     const page = Number(params.page) || 1
-    const pageSize = Number(params.pageSize) || 20
+    const pageSize = Math.min(Math.max(Number(params.pageSize) || 20, 1), 100)
     const skip = (page - 1) * pageSize
 
     const where: Record<string, unknown> = {}
@@ -39,7 +42,9 @@ export class BenefitService {
     let orderBy: Record<string, string> = { deadline: 'asc' }
     if (params.sort) {
       const [field, direction] = params.sort.split(':')
-      orderBy = { [field]: direction || 'asc' }
+      const safeField = this.SORT_FIELDS.includes(field as typeof this.SORT_FIELDS[number]) ? field : 'deadline'
+      const safeDirection = this.SORT_DIRECTIONS.includes(direction as typeof this.SORT_DIRECTIONS[number]) ? direction : 'asc'
+      orderBy = { [safeField]: safeDirection }
     }
 
     const [items, total] = await Promise.all([
