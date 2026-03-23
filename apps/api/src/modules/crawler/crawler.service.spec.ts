@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ConfigService } from '@nestjs/config'
 import { CrawlerService } from './crawler.service'
+import { PrismaService } from '../../prisma/prisma.service'
 import { BizinfoProvider } from './providers/bizinfo.provider'
 import { YouthcenterProvider } from './providers/youthcenter.provider'
 import { DataGoKrProvider } from './providers/data-go-kr.provider'
@@ -37,7 +38,7 @@ describe('CrawlerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CrawlerService,
-        { provide: 'PrismaService', useValue: prismaMock },
+        { provide: PrismaService, useValue: prismaMock },
         {
           provide: BizinfoProvider,
           useValue: { fetchAll: jest.fn() } as unknown,
@@ -52,19 +53,21 @@ describe('CrawlerService', () => {
         },
         { provide: ConfigService, useValue: { get: jest.fn() } },
       ],
-    })
-      .overrideProvider('PrismaService')
-      .useValue(prismaMock)
-      .compile()
+    }).compile()
 
     service = module.get<CrawlerService>(CrawlerService)
     bizinfo = module.get(BizinfoProvider)
     youthcenter = module.get(YouthcenterProvider)
     dataGoKr = module.get(DataGoKrProvider)
 
-    // Directly inject mock prisma
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(service as any).prisma = prismaMock
+    // Suppress logger noise and skip backoff delays
+    jest.spyOn((service as any).logger, 'log').mockImplementation(() => undefined)
+    jest.spyOn((service as any).logger, 'warn').mockImplementation(() => undefined)
+    jest.spyOn((service as any).logger, 'error').mockImplementation(() => undefined)
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
   describe('syncAll', () => {
@@ -107,9 +110,8 @@ describe('CrawlerService', () => {
     })
 
     it('should return empty result when all providers fail', async () => {
-      bizinfo.fetchAll.mockRejectedValue(new Error('API error'))
-      youthcenter.fetchAll.mockRejectedValue(new Error('API error'))
-      dataGoKr.fetchAll.mockRejectedValue(new Error('API error'))
+      // Mock the private fetchWithRetry to skip backoff delays
+      jest.spyOn(service as any, 'fetchWithRetry').mockRejectedValue(new Error('API error'))
 
       const result = await service.syncAll()
 
