@@ -6,6 +6,7 @@ import { Calendar, Building2, ArrowRight } from "lucide-react"
 import { Benefit } from "@/shared/types/benefit.types"
 import { Button } from "@/components/ui/button"
 import { useRef } from "react"
+import { formatDday } from "@benefit-calendar/shared-utils"
 
 interface BenefitListProps {
   benefits: Partial<Benefit>[]
@@ -82,9 +83,9 @@ function BenefitCard({ benefit }: { benefit: Partial<Benefit> }) {
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${getCategoryClass(benefit.category || "")}`}>
                   {benefit.category}
                 </span>
-                {benefit.status === 'OPEN' ? (
+                {benefit.status === 'OPEN' && benefit.deadline ? (
                   <span className="text-xs font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded-lg">
-                    D-5
+                    {formatDday(benefit.deadline)}
                   </span>
                 ) : (
                   <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">

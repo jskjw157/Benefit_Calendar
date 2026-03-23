@@ -1,7 +1,7 @@
 'use client'
 
 import { Check, ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export type SortOption = 'deadline:asc' | 'amount:desc' | 'recent' | 'popular'
@@ -21,9 +21,26 @@ const OPTIONS: { value: SortOption; label: string }[] = [
 export function SortSelect({ value, onChange }: SortSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const selected = OPTIONS.find(opt => opt.value === value)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [isOpen])
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"

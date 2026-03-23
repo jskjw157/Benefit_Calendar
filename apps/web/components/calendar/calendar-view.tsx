@@ -78,7 +78,7 @@ export function CalendarView() {
         ))}
 
         {actualDays.map((day, i) => {
-          const event = events.find(e => e.date === day)
+          const dayEvents = events.filter(e => e.date === day)
           const isSelected = selectedDate === day
 
           return (
@@ -90,8 +90,8 @@ export function CalendarView() {
               onClick={() => selectDate(day)}
               className={cn(
                 "relative h-32 md:h-40 rounded-3xl p-4 transition-all duration-300 cursor-pointer border group overflow-hidden",
-                isSelected 
-                  ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-105 z-10 border-transparent" 
+                isSelected
+                  ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-105 z-10 border-transparent"
                   : "bg-white/60 hover:bg-white border-white/40 hover:border-blue-200 hover:shadow-lg"
               )}
             >
@@ -102,22 +102,43 @@ export function CalendarView() {
                 {day}
               </span>
 
-              {event && (
-                <motion.div 
+              {dayEvents.length > 0 && (
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-2"
+                  className="mt-2 space-y-1 overflow-hidden"
                 >
-                  <div className={cn(
-                    "text-xs p-2 rounded-xl font-medium leading-tight",
-                    isSelected 
-                      ? "bg-white/20 text-white" 
-                      : event.type === 'deadline' 
-                        ? "bg-orange-50 text-orange-600" 
-                        : "bg-blue-50 text-blue-600"
-                  )}>
-                    {event.title}
-                  </div>
+                  {dayEvents.length === 1 ? (
+                    <div className={cn(
+                      "text-xs p-2 rounded-xl font-medium leading-tight",
+                      isSelected
+                        ? "bg-white/20 text-white"
+                        : dayEvents[0].type === 'deadline'
+                          ? "bg-orange-50 text-orange-600"
+                          : "bg-blue-50 text-blue-600"
+                    )}>
+                      {dayEvents[0].title}
+                    </div>
+                  ) : (
+                    <>
+                      <div className={cn(
+                        "text-xs p-2 rounded-xl font-medium leading-tight",
+                        isSelected
+                          ? "bg-white/20 text-white"
+                          : dayEvents[0].type === 'deadline'
+                            ? "bg-orange-50 text-orange-600"
+                            : "bg-blue-50 text-blue-600"
+                      )}>
+                        {dayEvents[0].title}
+                      </div>
+                      <div className={cn(
+                        "text-xs px-2 py-1 rounded-xl font-medium",
+                        isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                      )}>
+                        +{dayEvents.length - 1}건 더보기
+                      </div>
+                    </>
+                  )}
                 </motion.div>
               )}
 

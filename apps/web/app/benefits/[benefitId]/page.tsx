@@ -11,6 +11,62 @@ import { Benefit } from "@/shared/types/benefit.types"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { useRef, useState, useEffect } from "react"
 import { benefitService } from "@/shared/services/benefit.service"
+import { formatDday } from "@benefit-calendar/shared-utils"
+
+interface FaqItemProps {
+  question: string
+  answer: string
+  index: number
+}
+
+function FaqItem({ question, answer, index }: FaqItemProps) {
+  const [isOpen, setIsOpen] = React.useState(false)
+
+  return (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="glass-card overflow-hidden"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 text-left flex justify-between items-center"
+      >
+        <motion.span
+          animate={{ x: isOpen ? 4 : 0 }}
+          className="font-medium text-slate-900"
+        >
+          {question}
+        </motion.span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </motion.div>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <div className="px-6 pb-4 text-sm text-slate-600">
+          {answer}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 const getCategoryClass = (category: string) => {
   const map: Record<string, string> = {
     "주거": "category-housing",
@@ -184,7 +240,7 @@ export default function BenefitDetailPage() {
                       style={{ transformStyle: "preserve-3d" }}
                     >
                       <div style={{ transform: "translateZ(20px)" }} className="text-sm font-bold text-orange-500 bg-white px-2 py-0.5 rounded-full shadow-sm">
-                        D-5
+                        {benefit.deadline ? formatDday(benefit.deadline) : ''}
                       </div>
                     </motion.div>
                   </div>
@@ -340,53 +396,14 @@ export default function BenefitDetailPage() {
                     question: "신청 결과는 언제 확인할 수 있나요?",
                     answer: "심사 기간은 보통 신청 후 2-4주 소요되며, 결과는 신청 시 등록하신 연락처로 개별 통보됩니다. 복지로 마이페이지에서도 진행 상황을 확인하실 수 있습니다."
                   }
-                ].map((faq, i) => {
-                  const [isOpen, setIsOpen] = React.useState(false)
-
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 }}
-                      className="glass-card overflow-hidden"
-                    >
-                      <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="w-full px-6 py-4 text-left flex justify-between items-center"
-                      >
-                        <motion.span
-                          animate={{ x: isOpen ? 4 : 0 }}
-                          className="font-medium text-slate-900"
-                        >
-                          {faq.question}
-                        </motion.span>
-                        <motion.div
-                          animate={{ rotate: isOpen ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </motion.div>
-                      </button>
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          height: isOpen ? "auto" : 0,
-                          opacity: isOpen ? 1 : 0
-                        }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-6 pb-4 text-sm text-slate-600">
-                          {faq.answer}
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )
-                })}
+                ].map((faq, i) => (
+                  <FaqItem
+                    key={i}
+                    question={faq.question}
+                    answer={faq.answer}
+                    index={i}
+                  />
+                ))}
               </div>
             </section>
           </motion.div>

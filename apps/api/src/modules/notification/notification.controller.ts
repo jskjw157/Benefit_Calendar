@@ -3,6 +3,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CurrentUser } from '../../common/decorators/current-user.decorator'
 import { NotificationService } from './notification.service'
+import { UpdateNotificationDto } from './dto/update-notification.dto'
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
@@ -19,7 +20,7 @@ export class NotificationController {
   @Patch()
   updateSettings(
     @CurrentUser('id') userId: string,
-    @Body() body: Record<string, unknown>
+    @Body() body: UpdateNotificationDto
   ) {
     return this.notificationService.updateSettings(userId, body)
   }
